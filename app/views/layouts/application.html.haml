@@ -1,0 +1,20 @@
+!!!
+- if @site.try(:stylesheet)
+  - content_for :stylesheets do
+    = stylesheet_link_tag @site.stylesheet
+= render :partial => "/shared/html_tag"
+- site_bar = render(:partial => "/shared/site_bar", :locals => {:head => true})
+= render :partial => "/shared/head"
+%body
+  /
+    = request.host
+  -#= site_bar
+  = render :partial => "/shared/ie6check" if request.env['HTTP_USER_AGENT'] =~ /MSIE/
+  #container
+    %header
+    = render :partial => "/shared/header"
+    %section#page
+    = yield
+    %footer
+    = render :partial => "/shared/footer"
+  = render :partial => "/shared/javascripts"

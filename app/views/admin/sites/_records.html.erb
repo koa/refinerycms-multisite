@@ -1,0 +1,22 @@
+<% if searching? %>
+  <h2>
+    <%= t('results_for', :scope => 'shared.admin.search', :query => params[:search]) %>
+  </h2>
+<% end %>
+<% if @sites.any? %>
+  <div class='pagination_container'>
+    <%= render :partial => 'sites' %>
+  </div>
+<% else %>
+  <p>
+    <% if searching? %>
+      <%= t('no_results', :scope => 'shared.admin.search') %>
+    <% else %>
+      <strong>
+        <%= t('.empty_set') %>
+        <%= t('.create_first', :link => t('new', :scope => 'admin.sites.actions')
+            ) %>
+      </strong>
+    <% end %>
+  </p>
+<% end %>

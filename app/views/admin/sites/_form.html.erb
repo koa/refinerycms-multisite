@@ -1,0 +1,51 @@
+<%= form_for [:admin, @site] do |f| %>
+
+  <%= render :partial => "/shared/admin/error_messages",
+             :locals => {
+                     :object => @site,
+                     :include_object_name => true
+             } %>
+
+  <div class='field'>
+    <%= f.label :name %>
+    <%= f.text_field :name, :class => "larger widest" %>
+  </div>
+  <div class='field'>
+    <%= f.label :page_id %>
+    <%= f.select :page_id, nested_set_options(Page, @page) {|i| "#{'-' * i.level} #{i.title}" },
+               :include_blank => true %>
+  </div>
+  <div class='field'>
+    <%= f.label :stylesheet %>
+    <%= f.text_field :stylesheet%>
+  </div>
+  <%= f.label :hostnames %>
+  <%= f.fields_for :hostnames do |hf| %>
+    <%= render 'hostname_fields', :f=>hf %>
+  <% end %>
+  <p><%= link_to_add_fields refinery_icon_tag('add.png'), f,
+                            :hostnames %></p>
+  <%= render :partial => "/shared/admin/form_actions",
+             :locals => {
+                     :f => f,
+                     :continue_editing => false,
+                     :submit_button_title => t('.restart_may_be_in_order_html'),
+                     :delete_title => t('delete', :scope => 'admin.sites'),
+                     :delete_confirmation => t('message', :scope => 'shared.admin.delete',
+                                               :title => @site.name.to_s.titleize),
+                     :hide_delete => (!@site.persisted? or from_dialog?)
+             } %>
+<% end -%>
+<% content_for :javascripts do %>
+  <script type="text/javascript">
+    function remove_fields(link) {
+      $(link).prev("input[type=hidden]").val("1");
+      $(link).closest(".fields").hide();
+    }
+    function add_fields(link, association, content) {
+      var new_id = new Date().getTime();
+      var regexp = new RegExp("new_" + association, "g");
+      $(link).before(content.replace(regexp, new_id));
+    }
+  </script>
+<% end %>

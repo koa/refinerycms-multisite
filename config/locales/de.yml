@@ -1,0 +1,11 @@
+de:
+  plugins:
+    sites:
+      title: Sites
+  admin:
+    sites:
+      actions:
+        new: 'Site hinzufügen'
+      edit: 'Site anpassen'
+      delete: 'Site entfernen'
+

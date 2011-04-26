@@ -1,0 +1,20 @@
+<li class='clearfix record <%= cycle("on", "on-hover") %>'>
+  <span class='title'>
+    <%= site.name.to_s.titleize %>
+    <span class="preview">- <%= site.hostnames.map {|host| host.hostname+" "}
+    %></span>
+  </span>
+  <span class='actions'>
+    <%= link_to refinery_icon_tag('application_edit.png'),
+                edit_admin_site_path(site, :dialog => true,
+                                  :width => 725, :height => 525),
+                :title => t('edit', :scope => 'admin.sites') %>
+    <%= link_to refinery_icon_tag('delete.png'),
+                admin_site_path(site),
+                :class => 'cancel confirm-delete',
+                :title => t('delete', :scope => 'admin.sites'),
+                :confirm => t('message', :scope => 'shared.admin.delete',
+                              :title => site.name),
+                :method => :delete %>
+  </span>
+</li>
