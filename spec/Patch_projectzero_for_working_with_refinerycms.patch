@@ -1,0 +1,60 @@
+Index: spec/factories.rb
+===================================================================
+--- spec/factories.rb	(date 1303883535000)
++++ spec/factories.rb	(revision )
+@@ -1,3 +1,20 @@
+ Factory.define :post do |f|
+   f.title 'Post title'
+ end
++
++Factory.define :user do |u|
++  u.sequence(:username) { |n| "person#{n}" }
++  u.sequence(:email) { |n| "person#{n}@example.com" }
++  u.password  "greenandjuicy"
++  u.password_confirmation "greenandjuicy"
++end
++
++Factory.define :refinery_user, :parent => :user do |u|
++  u.roles { [ Role[:refinery] ] }
++
++  u.after_create do |user|
++    Refinery::Plugins.registered.each_with_index do |plugin, index|
++      user.plugins.create(:name => plugin.name, :position => index)
++    end
++  end
++end
+\ No newline at end of file
+Index: spec/acceptance/post_create_spec.rb
+===================================================================
+--- spec/acceptance/post_create_spec.rb	(date 1303883535000)
++++ spec/acceptance/post_create_spec.rb	(revision )
+@@ -6,6 +6,7 @@
+ } do
+ 
+   scenario "should create new post" do
++    Factory.create(:refinery_user)
+     post = Factory.build(:post)
+     visit '/posts/new'
+ 
+@@ -19,6 +20,7 @@
+   end
+ 
+   scenario "should show post index" do
++    Factory.create(:refinery_user)
+     attributes = Factory.attributes_for(:post)
+     Post.create!(attributes)
+ 
+Index: spec/controllers/posts_controller_spec.rb
+===================================================================
+--- spec/controllers/posts_controller_spec.rb	(date 1303883535000)
++++ spec/controllers/posts_controller_spec.rb	(revision )
+@@ -1,7 +1,8 @@
+ require 'spec_helper'
+ 
+ describe PostsController do
+-
++  include Devise::TestHelpers
++  before(:each){Factory.create(:refinery_user)}
+   context 'GET on new' do
+     before(:each) { get :new }
+     it 'assigns a new post record' do
