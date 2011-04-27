@@ -12,23 +12,4 @@ class Site < ActiveRecord::Base
     Site.joins(:hostnames).where(:hostnames=>{:hostname=>hostname}).first ||
             Site.joins(:hostnames).where(:hostnames=>{:hostname=>'*'}).first
   end
-
-  # Monkey-Patch the Page-Controller for loading the right root-Page
-  PagesController.class_eval do
-    def home
-      if (@site)
-        error_404 unless (@page = Page.find(@site.page_id)).present?
-      else
-        error_404 unless (@page = Page.where(:link_url => '/').first).present?
-      end
-    end
-  end
-  # Monkey-Patch the Application-Controller for loading the current site
-  ApplicationController.class_eval do
-    prepend_before_filter :load_site
-    protected
-    def load_site
-      @site = Site.find_by_hostname(request.host)
-    end
-  end
 end
