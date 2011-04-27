@@ -25,7 +25,7 @@ class Site < ActiveRecord::Base
   end
   # Monkey-Patch the Application-Controller for loading the current site
   ApplicationController.class_eval do
-    before_filter :load_site
+    prepend_before_filter :load_site
     protected
     def load_site
       @site = Site.find_by_hostname(request.host)
