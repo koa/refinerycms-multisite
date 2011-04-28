@@ -5,7 +5,8 @@ PROJECTZERO=git://github.com/panter/project_zero.git
 cd "$(dirname "$0")/.."
 CURRENTPROJECT="$(pwd)"
 
-cd /tmp
+mkdir tmp
+cd tmp
 
 rm -rf rickrockstar
 
