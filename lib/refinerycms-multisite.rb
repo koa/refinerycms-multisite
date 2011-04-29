@@ -21,23 +21,27 @@ module Refinery
   end
 end
 
+module PagesControllerSite
+  def home_with_site
+    if (@site)
+      error_404 unless (@page = Page.find(@site.page_id)).present?
+    else
+      home_without_site
+    end
+  end
+end
+
 class ActionController::Base
   # Loading the Current Site
   before_filter :load_site
   protected
   def load_site
     @site = Site.find_by_hostname(request.host)
+    return if ::PagesController.include? PagesControllerSite
     # Monkey-Patch the Page-Controller for loading the right root-Page
-    return if ::PagesController.new.respond_to? :home_with_site
     ::PagesController.class_eval do
-      def home_with_site
-        if (@site)
-          error_404 unless (@page = Page.find(@site.page_id)).present?
-        else
-          home_without_site
-        end
-      end
-      alias_method_chain  :home, :site
+      include PagesControllerSite
+      alias_method_chain :home, :site
     end
   end
 end
