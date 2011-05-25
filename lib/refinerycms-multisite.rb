@@ -19,6 +19,32 @@ module Refinery
       end
     end
   end
+
+  module SiteModel
+    extend ActiveSupport::Concern
+
+    included do
+      belongs_to :page
+      has_many :hostnames, :dependent => :destroy
+
+      accepts_nested_attributes_for :hostnames, :allow_destroy => true
+    end
+
+    module ClassMethods
+      def find_by_hostname(hostname)
+        Site.joins(:hostnames).where(:hostnames=>{:hostname=>hostname}).first ||
+          Site.joins(:hostnames).where(:hostnames=>{:hostname=>'*'}).first
+      end
+    end
+
+    module InstanceMethods
+    end
+  end
+  
+  module SiteModelClassMethods
+    #include ActiveRecord
+
+  end
 end
 
 module PagesControllerSite
