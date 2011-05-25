@@ -25,6 +25,9 @@ module Refinery
 
     included do
       belongs_to :page
+      attr_accessible :name, :page_id, :stylesheet, :hostnames,
+          :hostnames_attributes
+
       has_many :hostnames, :dependent => :destroy
 
       accepts_nested_attributes_for :hostnames, :allow_destroy => true
