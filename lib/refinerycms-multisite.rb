@@ -43,7 +43,7 @@ module Refinery
     module InstanceMethods
     end
   end
-  
+
   module SiteModelClassMethods
     #include ActiveRecord
 
@@ -53,7 +53,17 @@ end
 module PagesControllerSite
   def home_with_site
     if (@site)
-      error_404 unless (@page = Page.find(@site.page_id)).present?
+      @page = Page.find(@site.page_id)
+      if @page.try(:live?) || (refinery_user? && current_user.authorized_plugins.include?("refinery_pages"))
+        # if the admin wants this to be a "placeholder" page which goes to its first child, go to that instead.
+        if @page.skip_to_first_child && (first_live_child = @page.children.order('lft ASC').live.first).present?
+          redirect_to first_live_child.url
+        elsif @page.link_url.present?
+          redirect_to @page.link_url and return
+        end
+      else
+        error_404
+      end
     else
       home_without_site
     end
