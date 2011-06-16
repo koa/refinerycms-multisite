@@ -76,9 +76,9 @@ class ActionController::Base
   protected
   def load_site
     @site = Site.find_by_hostname(request.host)
-    return if ::PagesController.include? PagesControllerSite
+    return if Refinery::PagesController.include? PagesControllerSite
     # Monkey-Patch the Page-Controller for loading the right root-Page
-    ::PagesController.class_eval do
+    Refinery::PagesController.class_eval do
       include PagesControllerSite
       alias_method_chain :home, :site
     end
